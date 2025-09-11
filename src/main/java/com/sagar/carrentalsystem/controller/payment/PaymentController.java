@@ -1,5 +1,6 @@
 package com.sagar.carrentalsystem.controller.payment;
 
+import com.sagar.carrentalsystem.model.dto.PaymentResponseDTO;
 import com.sagar.carrentalsystem.model.entity.payment.Payment;
 import com.sagar.carrentalsystem.service.payment.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,10 +22,11 @@ public class PaymentController {
 
     @PostMapping("/process/{bookingId}")
     @PreAuthorize("hasRole('CUSTOMER')")
-    public ResponseEntity<Payment> processPayment(@PathVariable Long bookingId,
-                                                  @RequestParam String paymentMethod,
-                                                  @RequestParam String transactionId) {
-        Payment payment = paymentService.processPayment(bookingId, paymentMethod, transactionId);
-        return new ResponseEntity<>(payment, HttpStatus.CREATED);
+    public ResponseEntity<PaymentResponseDTO> processPayment(
+            @PathVariable Long bookingId,
+            @RequestParam String paymentMethod,
+            @RequestParam String transactionId) {
+        PaymentResponseDTO processedPayment = paymentService.processPayment(bookingId, paymentMethod, transactionId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(processedPayment);
     }
 }

@@ -1,6 +1,8 @@
 package com.sagar.carrentalsystem.service.payment;
 
 import com.sagar.carrentalsystem.constants.BookingStatus;
+import com.sagar.carrentalsystem.mapper.PaymentMapper;
+import com.sagar.carrentalsystem.model.dto.PaymentResponseDTO;
 import com.sagar.carrentalsystem.model.entity.booking.Booking;
 import com.sagar.carrentalsystem.model.entity.payment.Payment;
 import com.sagar.carrentalsystem.repository.bookingRepo.BookingRepository;
@@ -19,9 +21,11 @@ public class PaymentService {
     private PaymentRepository paymentRepository;
     @Autowired
     private BookingRepository bookingRepository;
+    @Autowired
+    private PaymentMapper paymentMapper;
 
 
-    public Payment processPayment(Long bookingId, String paymentMethod, String transactionId) {
+    public PaymentResponseDTO processPayment(Long bookingId, String paymentMethod, String transactionId) {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new EntityNotFoundException("Booking not found with ID: " + bookingId));
 
@@ -41,6 +45,8 @@ public class PaymentService {
         booking.setStatus(BookingStatus.PAID);
         bookingRepository.save(booking);
 
-        return paymentRepository.save(payment);
+        Payment savedPayment = paymentRepository.save(payment);
+
+        return paymentMapper.toDTO(savedPayment);
     }
 }
