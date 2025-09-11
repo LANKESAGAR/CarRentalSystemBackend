@@ -132,3 +132,19 @@
  *
  * Bypassing Other Filters: Once the JwtAuthFilter successfully authenticates the user and sets the SecurityContextHolder, the request proceeds down the filter chain. Other filters, including the UsernamePasswordAuthenticationFilter, will see that the SecurityContextHolder already contains an authenticated user and will do nothing. They will simply let the request pass.
  */
+
+/**
+ * Explanation of Handlers:
+ *
+ * EntityNotFoundException: Handles cases where an entity (like a car or booking) is not found in the database. Returns a 404 Not Found.
+ *
+ * IllegalStateException: Catches logical errors, like trying to pay for a booking that isn't APPROVED. Returns a 400 Bad Request.
+ *
+ * IllegalArgumentException: Handles invalid data passed to a service, such as a mismatched car variant or invalid dates. Returns a 400 Bad Request.
+ *
+ * SecurityException: Catches unauthorized actions, such as a customer trying to cancel another customer's booking. Returns a 403 Forbidden.
+ *
+ * MethodArgumentNotValidException: Specifically handles validation errors that occur due to the @Valid annotation on your DTOs. It extracts all validation messages and returns a structured 400 Bad Request response.
+ *
+ * Exception.class: This is a general handler that catches any other unexpected exceptions. It prevents internal server errors from exposing sensitive details to the client and instead returns a generic 500 Internal Server Error.
+ */
