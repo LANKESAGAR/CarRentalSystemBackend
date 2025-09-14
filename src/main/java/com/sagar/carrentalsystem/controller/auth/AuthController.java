@@ -104,7 +104,7 @@ public class AuthController {
 
         // If all checks pass, generate and return the token
         String token = jwtGenerator.generateToken(authentication);
-        String refreshToken = jwtGenerator.generateRefreshToken(user.getEmail());
+        String refreshToken = jwtGenerator.generateRefreshToken(user.getEmail(), user.getRole().name());
 
         refreshTokenService.storeRefreshToken(user.getEmail(), refreshToken);
         return new ResponseEntity<>(new AuthResponse(token, refreshToken), HttpStatus.OK);
@@ -115,9 +115,11 @@ public class AuthController {
         RefreshToken validToken = refreshTokenService.validateRefreshToken(refreshToken);
 
         String email = jwtGenerator.getEmailFromJwt(validToken.getToken());
+        String role = jwtGenerator.getRoleFromJwt(validToken.getToken());
 
-        String newAccessToken = jwtGenerator.generateAccessToken(email);
-        String newRefreshToken = jwtGenerator.generateRefreshToken(email);
+
+        String newAccessToken = jwtGenerator.generateAccessToken(email, role);
+        String newRefreshToken = jwtGenerator.generateRefreshToken(email, role);
 
         refreshTokenService.storeRefreshToken(email, newRefreshToken);
 

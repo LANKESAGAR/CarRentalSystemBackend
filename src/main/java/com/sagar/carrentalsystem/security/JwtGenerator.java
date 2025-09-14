@@ -32,35 +32,42 @@ public class JwtGenerator {
     public String generateToken(Authentication authentication) {
         logger.info("Generate Token for the user : {}", authentication.getName());
         String email = authentication.getName();
+        String role = authentication.getAuthorities().stream()
+                .findFirst()
+                .map(Object::toString)
+                .orElse("CUSTOMER");
         Date currentDate = new Date();
         Date expirationDate = new Date(currentDate.getTime() + jwtExpirationMs);
 
         return Jwts.builder()
                 .subject(email)
+                .claim("role", role)
                 .issuedAt(currentDate)
                 .expiration(expirationDate)
                 .signWith(getSigningKey())
                 .compact();
     }
 
-    public String generateAccessToken(String email) {
+    public String generateAccessToken(String email, String role) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpirationMs);
 
         return Jwts.builder()
                 .subject(email)
+                .claim("role", role)
                 .issuedAt(now)
                 .expiration(expiryDate)
                 .signWith(getSigningKey())
                 .compact();
     }
 
-    public String generateRefreshToken(String email) {
+    public String generateRefreshToken(String email, String role) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + refreshExpirationMs);
 
         return Jwts.builder()
                 .subject(email)
+                .claim("role", role)
                 .issuedAt(now)
                 .expiration(expiryDate)
                 .signWith(getSigningKey())
@@ -74,6 +81,15 @@ public class JwtGenerator {
                 .parseSignedClaims(token)
                 .getPayload();
         return claims.getSubject();
+    }
+
+    public String getRoleFromJwt(String token) {
+        Claims claims = Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+        return claims.get("role", String.class);
     }
 
     public boolean validateToken(String token, String expectedUserId) {
