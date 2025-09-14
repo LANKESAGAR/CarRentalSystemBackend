@@ -7,6 +7,7 @@ import com.sagar.carrentalsystem.model.request.AuthRequest;
 import com.sagar.carrentalsystem.model.response.AuthResponse;
 import com.sagar.carrentalsystem.repository.userRepo.UserRepository;
 import com.sagar.carrentalsystem.security.JwtGenerator;
+import com.sagar.carrentalsystem.service.security.RefreshTokenService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +21,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import com.sagar.carrentalsystem.model.entity.user.RefreshToken;
+
 
 import java.security.Principal;
+import java.time.Instant;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "api/auth")
@@ -31,14 +36,16 @@ public class AuthController {
     private UserRepository userRepository;
     private PasswordEncoder passwordEncoder;
     private JwtGenerator jwtGenerator;
+    private RefreshTokenService refreshTokenService;
     Logger logger = LoggerFactory.getLogger(AuthController.class);
 
     @Autowired
-    public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository, PasswordEncoder passwordEncoder, JwtGenerator jwtGenerator) {
+    public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository, PasswordEncoder passwordEncoder, JwtGenerator jwtGenerator, RefreshTokenService refreshTokenService) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtGenerator = jwtGenerator;
+        this.refreshTokenService = refreshTokenService;
     }
 
     @PostMapping(path="register")
@@ -94,10 +101,34 @@ public class AuthController {
             }
         }
 
-    // If all checks pass, generate and return the token
+
+        // If all checks pass, generate and return the token
         String token = jwtGenerator.generateToken(authentication);
-        return new ResponseEntity<>(new AuthResponse(token), HttpStatus.OK);
+        String refreshToken = jwtGenerator.generateRefreshToken(user.getEmail());
+
+        refreshTokenService.storeRefreshToken(user.getEmail(), refreshToken);
+        return new ResponseEntity<>(new AuthResponse(token, refreshToken), HttpStatus.OK);
     }
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity<AuthResponse> refreshToken(@RequestParam String refreshToken) {
+        RefreshToken validToken = refreshTokenService.validateRefreshToken(refreshToken);
+
+        String email = jwtGenerator.getEmailFromJwt(validToken.getToken());
+
+        String newAccessToken = jwtGenerator.generateAccessToken(email);
+        String newRefreshToken = jwtGenerator.generateRefreshToken(email);
+
+        refreshTokenService.storeRefreshToken(email, newRefreshToken);
+
+        AuthResponse authResponse = new AuthResponse();
+        authResponse.setAccessToken(newAccessToken);
+        authResponse.setRefreshToken(newRefreshToken);
+        authResponse.setTokenType("Bearer");
+
+        return ResponseEntity.ok(authResponse);
+    }
+
 
     @PostMapping("/change-password")
     public ResponseEntity<String> changePassword(@RequestBody ChangePasswordRequest request, Principal principal) {
@@ -122,4 +153,6 @@ public class AuthController {
 
         return new ResponseEntity<>("Password changed successfully.", HttpStatus.OK);
     }
+
+
 }

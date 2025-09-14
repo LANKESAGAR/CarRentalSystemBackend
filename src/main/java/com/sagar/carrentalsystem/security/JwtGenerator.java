@@ -20,6 +20,8 @@ public class JwtGenerator {
     private String jwtSecret;
     @Value("${jwt.expirationMs}")
     private long jwtExpirationMs;
+    @Value("${jwt.refreshExpirationMs}")
+    private long refreshExpirationMs;
     Logger logger = LoggerFactory.getLogger(JwtGenerator.class);
 
     private SecretKey getSigningKey() {
@@ -37,6 +39,30 @@ public class JwtGenerator {
                 .subject(email)
                 .issuedAt(currentDate)
                 .expiration(expirationDate)
+                .signWith(getSigningKey())
+                .compact();
+    }
+
+    public String generateAccessToken(String email) {
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + jwtExpirationMs);
+
+        return Jwts.builder()
+                .subject(email)
+                .issuedAt(now)
+                .expiration(expiryDate)
+                .signWith(getSigningKey())
+                .compact();
+    }
+
+    public String generateRefreshToken(String email) {
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + refreshExpirationMs);
+
+        return Jwts.builder()
+                .subject(email)
+                .issuedAt(now)
+                .expiration(expiryDate)
                 .signWith(getSigningKey())
                 .compact();
     }
@@ -94,5 +120,8 @@ public class JwtGenerator {
         return expiryTime.before(new Date());
     }
 
+    public long getRefreshExpirationMs() {
+        return refreshExpirationMs;
+    }
 
 }
