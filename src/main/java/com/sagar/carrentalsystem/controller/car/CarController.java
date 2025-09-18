@@ -24,14 +24,14 @@ public class CarController {
     }
 
     @PostMapping("/{carVariantId}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<CarDTO> addCar(@PathVariable Long carVariantId, @Valid @RequestBody Car car) {
         CarDTO addedCar = carService.addCar(car, carVariantId);
         return new ResponseEntity<>(addedCar, HttpStatus.CREATED);
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<List<CarDTO>> getAllCars() {
         List<CarDTO> cars = carService.getAllCars();
         return new ResponseEntity<>(cars, HttpStatus.OK);

@@ -18,7 +18,7 @@ public class CarVariantController {
 
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<CarVariantDTO> createCarVariant(@RequestBody CarVariantDTO carVariant) {
         CarVariantDTO createdVariant = carVariantService.createCarVariant(carVariant);
         return new ResponseEntity<>(createdVariant, HttpStatus.CREATED);

@@ -20,49 +20,49 @@ public class BookingController {
     private BookingService bookingService;
 
     @PostMapping("/customer")
-    @PreAuthorize("hasRole('CUSTOMER')")
+    @PreAuthorize("hasAuthority('CUSTOMER')")
     public ResponseEntity<BookingResponseDTO> createBooking(@Valid @RequestBody BookingRequestDTO bookingRequestDTO, Principal principal) {
         BookingResponseDTO createdBooking = bookingService.createBooking(bookingRequestDTO, principal.getName());
         return new ResponseEntity<>(createdBooking, HttpStatus.CREATED);
     }
 
     @GetMapping("/admin/all")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<List<BookingResponseDTO>> getAllBookings() {
         List<BookingResponseDTO> bookings = bookingService.getAllBookings();
         return new ResponseEntity<>(bookings, HttpStatus.OK);
     }
 
     @GetMapping("/admin/pending")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<List<BookingResponseDTO>> getPendingBookings() {
         List<BookingResponseDTO> bookings = bookingService.getPendingBookings();
         return new ResponseEntity<>(bookings, HttpStatus.OK);
     }
 
     @PutMapping("/admin/approve/{bookingId}/{carId}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<BookingResponseDTO> approveBooking(@PathVariable Long bookingId, @PathVariable Long carId) {
         BookingResponseDTO approvedBooking = bookingService.approveBooking(bookingId, carId);
         return new ResponseEntity<>(approvedBooking, HttpStatus.OK);
     }
 
     @PutMapping("/admin/reject/{bookingId}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<BookingResponseDTO> rejectBooking(@PathVariable Long bookingId) {
         BookingResponseDTO rejectedBooking = bookingService.rejectBooking(bookingId);
         return new ResponseEntity<>(rejectedBooking, HttpStatus.OK);
     }
 
     @GetMapping("/customer")
-    @PreAuthorize("hasRole('CUSTOMER')")
+    @PreAuthorize("hasAuthority('CUSTOMER')")
     public ResponseEntity<List<BookingResponseDTO>> getCustomerBookings(Principal principal) {
         List<BookingResponseDTO> bookings = bookingService.getCustomerBookings(principal.getName());
         return new ResponseEntity<>(bookings, HttpStatus.OK);
     }
 
     @PutMapping("/customer/cancel/{bookingId}")
-    @PreAuthorize("hasRole('CUSTOMER')")
+    @PreAuthorize("hasAuthority('CUSTOMER')")
     public ResponseEntity<BookingResponseDTO> cancelBooking(@PathVariable Long bookingId, Principal principal) {
         BookingResponseDTO canceledBooking = bookingService.cancelBooking(bookingId, principal.getName());
         return new ResponseEntity<>(canceledBooking, HttpStatus.OK);

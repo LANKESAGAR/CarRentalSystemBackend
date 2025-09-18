@@ -11,6 +11,7 @@ public class BookingMapper {
         dto.setId(booking.getId());
         dto.setCustomerName(booking.getCustomer().getUsername());
         dto.setCarVariantModel(booking.getCarVariant().getMake() + " " + booking.getCarVariant().getModel());
+        dto.setCarVariantId(booking.getCarVariant().getId());
         if (booking.getAssignedCar() != null) {
             dto.setAssignedCarLicensePlate(booking.getAssignedCar().getLicensePlate());
         }

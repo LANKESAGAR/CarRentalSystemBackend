@@ -34,7 +34,7 @@ public class AdminController {
     }
 
     @PostMapping("/register")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public ResponseEntity<String> registerNewAdmin(@RequestBody AuthRequest registerRequest) {
     // Step 1: Check if the employeeId is valid and an admin
         ValidEmployee validEmployee = validEmployeeRepository.findByEmployeeId(registerRequest.getEmployeeId())

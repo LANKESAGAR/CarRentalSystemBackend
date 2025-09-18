@@ -21,7 +21,7 @@ public class PaymentController {
     }
 
     @PostMapping("/process/{bookingId}")
-    @PreAuthorize("hasRole('CUSTOMER')")
+    @PreAuthorize("hasAuthority('CUSTOMER')")
     public ResponseEntity<PaymentResponseDTO> processPayment(
             @PathVariable Long bookingId,
             @RequestParam String paymentMethod,

@@ -50,9 +50,9 @@ public class SecurityConfig {
     // Allow public access to authentication endpoints (POST requests for login/register)
                                 .requestMatchers("/api/auth/**").permitAll()
                                 .requestMatchers("/api/variants/**").permitAll() // Publicly accessible to view cars
-                                .requestMatchers("/api/admin/**").hasRole("ADMIN") // Only ADMIN can access /admin endpoints
+                                .requestMatchers("/api/admin/**").hasAuthority("ADMIN") // Only ADMIN can access /admin endpoints
     // Add a rule for customer-only endpoints
-                                .requestMatchers("/api/customer/**").hasAnyRole("CUSTOMER", "ADMIN") // Both can access customer endpoints, but we'll mostly use CUSTOMER
+                                .requestMatchers("/api/customer/**").hasAnyAuthority("CUSTOMER", "ADMIN") // Both can access customer endpoints, but we'll mostly use CUSTOMER
 
     // All other requests require authentication
                                 .anyRequest().authenticated()

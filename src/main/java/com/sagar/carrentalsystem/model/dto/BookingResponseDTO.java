@@ -9,6 +9,7 @@ public class BookingResponseDTO {
     private Long id;
     private String customerName;
     private String carVariantModel;
+    private Long carVariantId;
     private String assignedCarLicensePlate;
     private LocalDate startDate;
     private LocalDate endDate;
@@ -77,5 +78,13 @@ public class BookingResponseDTO {
 
     public void setStatus(BookingStatus status) {
         this.status = status;
+    }
+
+    public Long getCarVariantId() {
+        return carVariantId;
+    }
+
+    public void setCarVariantId(Long carVariantId) {
+        this.carVariantId = carVariantId;
     }
 }
