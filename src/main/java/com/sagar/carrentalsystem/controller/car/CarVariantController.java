@@ -29,4 +29,11 @@ public class CarVariantController {
         List<CarVariantDTO> variants = carVariantService.getAllCarVariants();
         return new ResponseEntity<>(variants, HttpStatus.OK);
     }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<Void> deleteCarVariant(@PathVariable Long id) {
+        carVariantService.deleteCarVariant(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }

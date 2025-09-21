@@ -2,6 +2,8 @@ package com.sagar.carrentalsystem.repository.bookingRepo;
 
 import com.sagar.carrentalsystem.constants.BookingStatus;
 import com.sagar.carrentalsystem.model.entity.booking.Booking;
+import com.sagar.carrentalsystem.model.entity.car.Car;
+import com.sagar.carrentalsystem.model.entity.car.CarVariant;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,4 +23,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     // Find bookings in PENDING status for admin review
     List<Booking> findByStatus(BookingStatus status);
+
+    List<Booking> findByAssignedCarAndStatusIn(Car assignedCar, List<BookingStatus> statuses);
+    List<Booking> findByCarVariantAndStatusIn(CarVariant carVariant, List<BookingStatus> statuses);
+
 }

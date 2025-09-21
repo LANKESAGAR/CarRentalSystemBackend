@@ -1,6 +1,7 @@
 package com.sagar.carrentalsystem.model.entity.car;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.util.List;
@@ -22,6 +23,7 @@ public class CarVariant {
     private double rentalRatePerDay;
 
     @OneToMany(mappedBy = "carVariant", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<Car> cars;
 
     public Long getId() {

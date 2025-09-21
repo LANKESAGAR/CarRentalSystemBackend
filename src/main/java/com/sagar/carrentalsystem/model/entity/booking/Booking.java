@@ -25,7 +25,7 @@ public class Booking {
     private CarVariant carVariant;
 
     @ManyToOne
-    @JoinColumn(name = "assigned_car_id") // This can be null initially
+    @JoinColumn(name = "assigned_car_id", foreignKey = @ForeignKey(name = "FK_BOOKING_ASSIGNED_CAR", foreignKeyDefinition = "FOREIGN KEY (assigned_car_id) REFERENCES cars(id) ON DELETE SET NULL"))
     private Car assignedCar;
 
     private LocalDate startDate;

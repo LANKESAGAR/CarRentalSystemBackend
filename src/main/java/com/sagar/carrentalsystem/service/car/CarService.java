@@ -60,5 +60,49 @@ public class CarService {
                 .filter(car -> !bookedCars.contains(car))
                 .collect(Collectors.toList());
     }
+
+    public void deleteCar(Long carId) {
+        Car car = carRepository.findById(carId)
+                .orElseThrow(() -> new EntityNotFoundException("Car with ID " + carId + " not found."));
+
+        // Check for active or pending bookings
+        List<Booking> activeBookings = bookingRepository.findByAssignedCarAndStatusIn(
+                car, List.of(BookingStatus.APPROVED, BookingStatus.PENDING));
+
+        if (!activeBookings.isEmpty()) {
+            throw new IllegalStateException("Cannot delete this car. It is assigned to one or more active or pending bookings.");
+        }
+
+        carRepository.deleteById(carId);
+    }
+
+    public CarDTO getCarById(Long id) {
+        Car car = carRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Car not found with ID: " + id));
+        return carMapper.toCarDTO(car);
+    }
+
+    public CarDTO updateCar(Long id, CarDTO carDetails) {
+        Car car = carRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Car not found with ID: " + id));
+
+        // Check for active or pending bookings before allowing updates to availability
+        if (car.isAvailable() != carDetails.isAvailable()) {
+            List<Booking> activeBookings = bookingRepository.findByAssignedCarAndStatusIn(
+                    car, List.of(BookingStatus.APPROVED, BookingStatus.PENDING));
+
+            if (!activeBookings.isEmpty()) {
+                throw new IllegalStateException("Cannot change car availability. It is assigned to active or pending bookings.");
+            }
+        }
+
+        // Update car properties
+        car.setLicensePlate(carDetails.getLicensePlate());
+        car.setAvailable(carDetails.isAvailable());
+        car.setLastServiceDate(carDetails.getLastServiceDate());
+
+        Car updatedCar = carRepository.save(car);
+        return carMapper.toCarDTO(updatedCar);
+    }
 }
 

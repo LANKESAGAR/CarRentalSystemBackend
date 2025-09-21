@@ -1,5 +1,6 @@
 package com.sagar.carrentalsystem.model.entity.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sagar.carrentalsystem.constants.Role;
 import jakarta.persistence.*;
 
@@ -22,6 +23,9 @@ public class User {
     private Role role;
     @Column(unique = true) // Employee ID should be unique for admins
     private String employeeId;
+    @JsonIgnore
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private RefreshToken refreshToken;
 
     public Long getId() {
         return id;
@@ -69,5 +73,13 @@ public class User {
 
     public void setEmployeeId(String employeeId) {
         this.employeeId = employeeId;
+    }
+
+    public RefreshToken getRefreshToken() {
+        return refreshToken;
+    }
+
+    public void setRefreshToken(RefreshToken refreshToken) {
+        this.refreshToken = refreshToken;
     }
 }

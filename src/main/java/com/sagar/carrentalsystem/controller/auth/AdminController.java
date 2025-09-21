@@ -13,10 +13,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(path = "api/admin")
@@ -62,4 +61,25 @@ public class AdminController {
 
         return new ResponseEntity<>("New admin registered successfully!", HttpStatus.OK);
     }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<String> deleteAdmin(@PathVariable Long id) {
+        if (!userRepository.existsById(id)) {
+            return new ResponseEntity<>("Admin with ID " + id + " not found.", HttpStatus.NOT_FOUND);
+        }
+
+        userRepository.deleteById(id);
+
+        logger.info("Admin with ID {} was deleted.", id);
+        return new ResponseEntity<>("Admin deleted successfully.", HttpStatus.OK);
+    }
+
+    @GetMapping("/list")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<List<User>> getAllAdmins() {
+        List<User> admins = userRepository.findByRole(Role.ADMIN);
+        return new ResponseEntity<>(admins, HttpStatus.OK);
+    }
+
 }

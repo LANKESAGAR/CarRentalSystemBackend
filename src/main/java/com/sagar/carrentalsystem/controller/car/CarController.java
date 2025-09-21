@@ -36,4 +36,26 @@ public class CarController {
         List<CarDTO> cars = carService.getAllCars();
         return new ResponseEntity<>(cars, HttpStatus.OK);
     }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<CarDTO> getCarById(@PathVariable Long id) {
+        CarDTO car = carService.getCarById(id);
+        return new ResponseEntity<>(car, HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<CarDTO> updateCar(@PathVariable Long id, @Valid @RequestBody CarDTO carDetails) {
+        CarDTO updatedCar = carService.updateCar(id, carDetails);
+        return new ResponseEntity<>(updatedCar, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<Void> deleteCar(@PathVariable Long id) {
+        carService.deleteCar(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
 }
